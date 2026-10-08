@@ -5,7 +5,9 @@ export default function PhoneCard({
   onSelect,
 }) {
   return (
-    <motion.div
+    <motion.button
+      type="button"
+      aria-label={`Seleccionar ${phone.brand} ${phone.model}, DPI ${phone.dpi}`}
       initial={{
         opacity: 0,
         y: 20,
@@ -50,6 +52,11 @@ export default function PhoneCard({
 
         boxShadow:
           "0 0 20px rgba(0,0,0,0.25)",
+        width: "100%",
+        textAlign: "left",
+        color: "inherit",
+        font: "inherit",
+        appearance: "none",
       }}
     >
       {/* GLOW */}
@@ -152,6 +159,6 @@ export default function PhoneCard({
           </h2>
         </div>
       </div>
-    </motion.div>
+    </motion.button>
   );
 }

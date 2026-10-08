@@ -1,27 +1,17 @@
+import { STYLES } from "../data/styles.js";
+
 export function generateSensitivity(dpi, style) {
+  if (!Number.isFinite(dpi) || dpi <= 0) {
+    throw new RangeError("DPI debe ser un número positivo.");
+  }
+  if (!Object.hasOwn(STYLES, style)) {
+    throw new RangeError("Selecciona un perfil de sensibilidad válido.");
+  }
+
   const REF_DPI = 411;
 
   const factor = REF_DPI / dpi;
-
-  // eslint-disable-next-line no-useless-assignment
-  let styleBoost = 1;
-
-  switch (style) {
-    case "aggressive":
-      styleBoost = 1.12;
-      break;
-
-    case "balanced":
-      styleBoost = 1;
-      break;
-
-    case "sniper":
-      styleBoost = 0.82;
-      break;
-
-    default:
-      styleBoost = 1;
-  }
+  const styleBoost = STYLES[style].boost;
 
   const general = Math.min(
     200,

@@ -1,25 +1,13 @@
-export default function Header() {
-    return (
-        <div style={{
-            textAlign: "center",
-            marginBottom: "30px"
-        }}>
-            <h1 style={{
-                color: "#00ff88",
-                fontSize: "40px",
-                marginBottom: "10px"
-            }}>
-                º   FF-SENS-PRO   º
-            </h1>
-
-            <p style={{
-                color: "#999",
-                fontSize: "16px",
-                marginBottom: "0"
-            }}>
-                Renerador de sensibilidad Free fire
-            </p>
-        </div>
-    );
+export default function Header({ catalogCount = 0 }) {
+  return (
+    <header className="app-header">
+      <div className="brand-mark" aria-hidden="true">FF</div>
+      <div>
+        <h1>FF SENS PRO</h1>
+        <p>Configuraciones de sensibilidad para Free Fire</p>
+      </div>
+      <span className="catalog-count">{catalogCount} DISPOSITIVOS</span>
+    </header>
+  );
 }
     

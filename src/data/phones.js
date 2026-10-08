@@ -77,7 +77,7 @@ export const PHONES = [
   {  id : 75, brand: "Apple", model: "iPhone 12", dpi: 460 },
   {  id : 76, brand: "Apple", model: "iPhone 13", dpi: 460 },
   {  id : 77, brand: "Apple", model: "iPhone 13 mini", dpi: 476 },
-  {  id : 78, brand: "Apple", model: "iPhone_14", dpi: 460 },
+  {  id : 78, brand: "Apple", model: "iPhone 14", dpi: 460 },
   {  id : 79, brand: "Apple", model: "iPhone 16 Pro", dpi: 460 },
   {  id : 80, brand: "Tecno", model: "Spark 10", dpi: 269 },
   {  id : 81, brand: "Tecno", model: "Spark 20", dpi: 269 },

@@ -1,47 +1,32 @@
-export default function SearchBox({ 
-    query,
-    setQuery,
-    onSearch,
-
-
-}) {
+export default function SearchBox({ query, setQuery }) {
     return (
-        <div style={{
-            display: "flex",
-            gap: "10px",
-            marginBottom: "30px"
-        }}>
+        <form
+            className="search-form"
+            onSubmit={(event) => event.preventDefault()}
+            role="search"
+        >
+            <label className="visually-hidden" htmlFor="phone-search">
+                Buscar marca o modelo de teléfono
+            </label>
             <input
-                type="text"
-                placeholder="Buscar..."
+                id="phone-search"
+                type="search"
+                placeholder="Ej. Samsung A54"
                 value={query}
-                onChange={e => setQuery(e.target.value)}
-                style={{
-                    flex: 1,
-                    padding: "14px",
-                    borderRadius: "12px",
-                    border:"none",
-                    outline: "none",
-                    backgroundColor: "#1e1e1e",
-                    color: "white",
-                    fontSize: "16px"
-                }}
-                />
-            <button
-                onClick={onSearch}
-                style={{
-                    padding: "14px 20px",
-                    borderRadius: "12px",
-                    border:"none",
-                    background: "#00ff88",
-                    color: "black",
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    cursor: "pointer"
-                }}
+                onChange={(event) => setQuery(event.target.value)}
+                autoComplete="off"
+            />
+            {query && (
+                <button
+                    className="clear-search"
+                    type="button"
+                    aria-label="Limpiar búsqueda"
+                    title="Limpiar búsqueda"
+                    onClick={() => setQuery("")}
                 >
-                Buscar
-            </button>
-        </div>
-    )
+                    <span aria-hidden="true">×</span>
+                </button>
+            )}
+        </form>
+    );
 }
