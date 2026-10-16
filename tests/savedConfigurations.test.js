@@ -2,10 +2,13 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   addSavedConfiguration,
+  getSelectedConfigurations,
+  MAX_COMPARE_CONFIGURATIONS,
   isStoredConfiguration,
   isSensitivityValues,
   MAX_SAVED_CONFIGURATIONS,
   sanitizeSavedConfigurations,
+  toggleComparisonSelection,
 } from "../src/utils/savedConfigurations.js";
 
 const phone = { id: 1, brand: "Samsung", model: "Galaxy A54", dpi: 403 };
@@ -80,4 +83,35 @@ test("adds the newest configuration first and enforces the storage limit", () =>
   assert.equal(next[0].id, "newest");
   assert.equal(next.at(-1).id, `saved-${MAX_SAVED_CONFIGURATIONS - 2}`);
   assert.throws(() => addSavedConfiguration([], { ...configuration, values: {} }), TypeError);
+});
+
+test("comparison selection toggles IDs and cannot exceed the comparison limit", () => {
+  const selected = ["saved-1", "saved-2"];
+
+  assert.deepEqual(toggleComparisonSelection(selected, "saved-2"), ["saved-1"]);
+  assert.deepEqual(
+    toggleComparisonSelection(selected, "saved-3"),
+    ["saved-1", "saved-2", "saved-3"],
+  );
+  assert.deepEqual(
+    toggleComparisonSelection(
+      [...selected, "saved-3"],
+      "saved-4",
+    ),
+    [...selected, "saved-3"],
+  );
+  assert.equal(MAX_COMPARE_CONFIGURATIONS, 3);
+});
+
+test("comparison order follows selection order and ignores deleted IDs", () => {
+  const configurations = [
+    { ...configuration, id: "saved-1" },
+    { ...configuration, id: "saved-2" },
+    { ...configuration, id: "saved-3" },
+  ];
+
+  assert.deepEqual(
+    getSelectedConfigurations(configurations, ["saved-3", "removed", "saved-1"]),
+    [configurations[2], configurations[0]],
+  );
 });

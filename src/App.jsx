@@ -14,8 +14,11 @@ import { searchPhones } from "./utils/searchPhones";
 import { isStoredPhone } from "./utils/storage";
 import {
   addSavedConfiguration,
+  getSelectedConfigurations,
+  MAX_COMPARE_CONFIGURATIONS,
   MAX_SAVED_CONFIGURATIONS,
   sanitizeSavedConfigurations,
+  toggleComparisonSelection,
 } from "./utils/savedConfigurations";
 import { useClipboard } from "./hooks/useClipboard";
 
@@ -82,6 +85,7 @@ export default function App() {
   const [customError, setCustomError] = useState("");
   const [sens, setSens] = useState(initialPreferences.sens);
   const [savedConfigurations, setSavedConfigurations] = useState(initialSavedConfigurations);
+  const [comparisonIds, setComparisonIds] = useState([]);
   const [configurationName, setConfigurationName] = useState("");
   const [savedConfigurationMessage, setSavedConfigurationMessage] = useState("");
   const [downloadError, setDownloadError] = useState("");
@@ -89,6 +93,7 @@ export default function App() {
   const { copied, copy } = useClipboard();
   const resultRef = useRef(null);
   const filteredPhones = useMemo(() => searchPhones(query, PHONES), [query]);
+  const comparisonConfigurations = getSelectedConfigurations(savedConfigurations, comparisonIds);
 
   const calculateSensitivity = (phone) => {
     setDownloadError("");
@@ -287,6 +292,7 @@ export default function App() {
     try {
       localStorage.setItem("savedConfigurations", JSON.stringify(next));
       setSavedConfigurations(next);
+      setComparisonIds((current) => current.filter((selectedId) => selectedId !== id));
       setSavedConfigurationMessage("Configuración guardada eliminada.");
     } catch {
       setSavedConfigurationMessage("No se pudo eliminar. Inténtalo de nuevo.");
@@ -550,6 +556,22 @@ export default function App() {
                         </span>
                       </div>
                       <div className="saved-configuration-actions">
+                        <label className="compare-configuration-option">
+                          <input
+                            type="checkbox"
+                            checked={comparisonIds.includes(configuration.id)}
+                            disabled={
+                              comparisonIds.length >= MAX_COMPARE_CONFIGURATIONS &&
+                              !comparisonIds.includes(configuration.id)
+                            }
+                            onChange={() =>
+                              setComparisonIds((current) =>
+                                toggleComparisonSelection(current, configuration.id),
+                              )
+                            }
+                          />
+                          <span>Comparar</span>
+                        </label>
                         <button
                           type="button"
                           onClick={() => applySavedConfiguration(configuration)}
@@ -572,6 +594,79 @@ export default function App() {
                 <p className="saved-configurations-empty">
                   Aún no guardas ninguna. Genera una, ajusta los valores y guárdala aquí.
                 </p>
+              )}
+              {comparisonConfigurations.length > 0 && (
+                <div className="comparison-panel">
+                  <div className="comparison-heading">
+                    <div>
+                      <h3>Comparación</h3>
+                      <p aria-live="polite">
+                        {comparisonConfigurations.length} de {MAX_COMPARE_CONFIGURATIONS} seleccionadas
+                        {comparisonConfigurations.length === 1
+                          ? ". Elige otra para comparar."
+                          : ". Diferencias calculadas respecto a la primera."}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setComparisonIds([])}
+                      disabled={comparisonConfigurations.length === 0}
+                    >
+                      Limpiar
+                    </button>
+                  </div>
+                  {comparisonConfigurations.length >= 2 && (
+                    <div
+                      className="comparison-table-scroll"
+                      role="region"
+                      aria-label="Comparación de sensibilidades guardadas"
+                      tabIndex="0"
+                    >
+                      <table className="comparison-table">
+                        <caption className="visually-hidden">
+                          Valores de sensibilidad y diferencia respecto a la primera configuración seleccionada
+                        </caption>
+                        <thead>
+                          <tr>
+                            <th scope="col">Ajuste</th>
+                            {comparisonConfigurations.map((configuration) => (
+                              <th scope="col" key={configuration.id}>
+                                <span>{configuration.name}</span>
+                                <small>
+                                  {configuration.phone.brand} {configuration.phone.model}
+                                </small>
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {FIELDS.map((field) => {
+                            const baseline = comparisonConfigurations[0].values[field.key];
+                            return (
+                              <tr key={field.key}>
+                                <th scope="row">{field.label}</th>
+                                {comparisonConfigurations.map((configuration, index) => {
+                                  const value = configuration.values[field.key];
+                                  const difference = value - baseline;
+                                  return (
+                                    <td key={configuration.id}>
+                                      <strong>{value}</strong>
+                                      {index > 0 && (
+                                        <small>
+                                          {difference > 0 ? `+${difference}` : difference}
+                                        </small>
+                                      )}
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
               )}
             </section>
           </section>

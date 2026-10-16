@@ -618,12 +618,148 @@ input:focus-visible,
 
 .saved-configuration-actions {
   display: flex;
+  align-items: center;
   flex: 0 0 auto;
   gap: 6px;
 }
 
+.compare-configuration-option {
+  display: flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 5px;
+  padding: 0 4px;
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.compare-configuration-option input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.compare-configuration-option input:disabled {
+  cursor: not-allowed;
+}
+
 .saved-configuration-actions .saved-configuration-delete {
   color: #ffb1b1;
+}
+
+.comparison-panel {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.comparison-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.comparison-heading h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.comparison-heading p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.comparison-heading button {
+  min-height: 34px;
+  padding: 6px 10px;
+  border: 1px solid #46534b;
+  border-radius: 5px;
+  background: #18211b;
+  color: var(--text);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.comparison-heading button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.comparison-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  overscroll-behavior-inline: contain;
+}
+
+.comparison-table {
+  width: 100%;
+  min-width: 460px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+}
+
+.comparison-table thead th {
+  min-width: 110px;
+  background: #151d17;
+  color: #d9e5db;
+  vertical-align: top;
+}
+
+.comparison-table thead th:first-child {
+  min-width: 82px;
+}
+
+.comparison-table thead th span,
+.comparison-table thead th small {
+  display: block;
+}
+
+.comparison-table thead th small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.comparison-table tbody th {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.comparison-table td {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.comparison-table td strong {
+  font-size: 13px;
+}
+
+.comparison-table td small {
+  margin-left: 5px;
+  color: var(--accent);
+  font-size: 10px;
+}
+
+.comparison-table tr:last-child > * {
+  border-bottom: 0;
 }
 
 .dpi-row {

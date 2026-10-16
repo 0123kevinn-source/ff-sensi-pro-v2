@@ -3,6 +3,26 @@ import { STYLES } from "../data/styles.js";
 import { isStoredPhone } from "./storage.js";
 
 export const MAX_SAVED_CONFIGURATIONS = 8;
+export const MAX_COMPARE_CONFIGURATIONS = 3;
+
+export function toggleComparisonSelection(selectedIds, id) {
+  if (selectedIds.includes(id)) {
+    return selectedIds.filter((selectedId) => selectedId !== id);
+  }
+  if (selectedIds.length >= MAX_COMPARE_CONFIGURATIONS) {
+    return selectedIds;
+  }
+  return [...selectedIds, id];
+}
+
+export function getSelectedConfigurations(configurations, selectedIds) {
+  const configurationsById = new Map(
+    configurations.map((configuration) => [configuration.id, configuration]),
+  );
+  return selectedIds
+    .map((id) => configurationsById.get(id))
+    .filter((configuration) => configuration !== undefined);
+}
 
 export function isSensitivityValues(value) {
   return (
