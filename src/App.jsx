@@ -11,6 +11,7 @@ import { STYLES } from "./data/styles";
 import { generateSensitivity } from "./utils/generateSensitivity";
 import { createCustomPhone } from "./utils/createCustomPhone";
 import { searchPhones } from "./utils/searchPhones";
+import { isStoredPhone } from "./utils/storage";
 import { useClipboard } from "./hooks/useClipboard";
 
 const VALID_STYLES = new Set(Object.keys(STYLES));
@@ -23,18 +24,6 @@ function readStoredValue(key) {
   } catch {
     return null;
   }
-}
-
-function isStoredPhone(value) {
-  return (
-    value !== null &&
-    typeof value === "object" &&
-    typeof value.brand === "string" &&
-    typeof value.model === "string" &&
-    Number.isInteger(value.dpi) &&
-    value.dpi >= 100 &&
-    value.dpi <= 1000
-  );
 }
 
 function loadStoredPreferences() {
@@ -364,10 +353,10 @@ export default function App() {
                 </p>
 
                 <div className="result-actions">
-                  <button className="download-button" onClick={downloadImage}>
+                  <button className="download-button" type="button" onClick={downloadImage}>
                     Descargar imagen
                   </button>
-                  <button className="copy-button" onClick={copySettings}>
+                  <button className="copy-button" type="button" onClick={copySettings}>
                     {copied === "settings" ? "Copiado" : "Copiar valores"}
                   </button>
                 </div>
@@ -389,6 +378,41 @@ export default function App() {
             )}
           </section>
         </div>
+        <section className="seo-guide" aria-labelledby="guide-title">
+          <h2 id="guide-title">Guía de sensibilidad para Free Fire</h2>
+          <p>
+            Genera una referencia inicial según el DPI que ingreses o el modelo
+            de teléfono seleccionado. Los valores se calculan en tu navegador y
+            puedes ajustarlos al tamaño de tus controles y a tu forma de jugar.
+          </p>
+          <div className="seo-guide-grid">
+            <article>
+              <h3>¿El DPI aumenta la sensibilidad táctil?</h3>
+              <p>
+                No necesariamente. En Android, la densidad afecta principalmente
+                el tamaño de los elementos de interfaz; no es una medición de la
+                respuesta física de la pantalla ni cambia por sí sola la
+                sensibilidad dentro del juego.
+              </p>
+            </article>
+            <article>
+              <h3>¿Los valores son oficiales o garantizados?</h3>
+              <p>
+                No. Son estimaciones no oficiales para usar como punto de partida.
+                Pruébalas en entrenamiento y haz pequeños ajustes según tu
+                dispositivo, HUD y comodidad.
+              </p>
+            </article>
+            <article>
+              <h3>¿Cómo encuentro mi modelo o ingreso mi DPI?</h3>
+              <p>
+                Busca por marca o modelo en el catálogo. Si no aparece, puedes
+                introducir un DPI entero entre 100 y 1000; la herramienta no
+                detecta ni modifica los ajustes del teléfono.
+              </p>
+            </article>
+          </div>
+        </section>
         <footer className="app-footer">
           <p>
             Los dispositivos y ajustes recientes se guardan solo en este navegador.

@@ -15,6 +15,7 @@ export default function SearchBox({ query, setQuery }) {
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 autoComplete="off"
+                maxLength={80}
             />
             {query && (
                 <button
