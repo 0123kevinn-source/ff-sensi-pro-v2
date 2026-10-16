@@ -2,54 +2,37 @@ export default function ResultCard({
   title,
   value,
   color = "#00ff88",
+  onChange,
 }) {
   return (
     <div
-      style={{
-        background: "#151515",
-        border: `1px solid ${color}`,
-        borderRadius: "16px",
-        padding: "18px",
-        marginBottom: "14px",
-        boxShadow: `0 0 15px ${color}22`,
-      }}
+      className="sensitivity-card"
+      style={{ "--sensitivity-color": color }}
     >
-      <h3
-        style={{
-          color,
-          marginBottom: "10px",
-          fontSize: "18px",
-        }}
-      >
-        {title}
-      </h3>
-
-      <div
-        style={{
-          fontSize: "32px",
-          fontWeight: "bold",
-          color: "white",
-        }}
-      >
-        {value}
+      <div className="sensitivity-card-heading">
+        <h3>{title}</h3>
+        <output aria-live="polite">{value}</output>
       </div>
-
-      <div
-        style={{
-          marginTop: "10px",
-          height: "8px",
-          borderRadius: "999px",
-          background: "#2a2a2a",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            width: `${value}%`,
-            height: "100%",
-            background: color,
-          }}
-        />
+      <div className="sensitivity-meter" aria-hidden="true">
+        <div style={{ width: `${(value / 200) * 100}%` }} />
+      </div>
+      <label className="visually-hidden" htmlFor={`sensitivity-${title}`}>
+        Ajustar sensibilidad de {title}
+      </label>
+      <input
+        id={`sensitivity-${title}`}
+        className="sensitivity-slider"
+        type="range"
+        min="0"
+        max="200"
+        step="1"
+        value={value}
+        aria-label={`Sensibilidad ${title}`}
+        onChange={(event) => onChange(Number(event.target.value))}
+      />
+      <div className="sensitivity-range-labels" aria-hidden="true">
+        <span>0</span>
+        <span>200</span>
       </div>
     </div>
   );

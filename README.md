@@ -2,6 +2,8 @@
 
 Aplicación web para generar configuraciones estimadas de sensibilidad a partir de una referencia de densidad de pantalla y un perfil de juego. Los cálculos se ejecutan en el navegador; el dispositivo actual, el perfil y hasta cuatro dispositivos recientes se guardan localmente.
 
+Los valores de sensibilidad se pueden ajustar individualmente entre 0 y 200 y restablecer a la estimación. También se pueden guardar hasta ocho configuraciones con nombre en el navegador y cargarlas o eliminarlas después. No se sincronizan entre dispositivos ni se envían a un servidor.
+
 El DPI/densidad de Android escala unidades de interfaz; no equivale a la sensibilidad física del panel táctil ni a los controles del juego. El navegador no puede leer ni modificar el ajuste de Android. Los resultados de esta app son estimaciones.
 
 ## Desarrollo

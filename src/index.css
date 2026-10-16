@@ -406,19 +406,224 @@ input:focus-visible,
 
 .sensitivity-grid > div {
   min-width: 0;
-  margin: 0 !important;
-  padding: 14px !important;
-  border-radius: 6px !important;
-  box-shadow: none !important;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #111713;
 }
 
-.sensitivity-grid h3 {
-  margin-top: 0 !important;
-  font-size: 14px !important;
+.sensitivity-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.sensitivity-grid > div > div:nth-child(2) {
-  font-size: 28px !important;
+.sensitivity-card-heading h3 {
+  margin: 0;
+  color: var(--sensitivity-color);
+  font-size: 14px;
+}
+
+.sensitivity-card-heading output {
+  color: var(--text);
+  font-size: 25px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.sensitivity-meter {
+  height: 5px;
+  margin-top: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #29312c;
+}
+
+.sensitivity-meter > div {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--sensitivity-color);
+}
+
+.sensitivity-slider {
+  width: 100%;
+  min-height: 30px;
+  margin: 8px 0 0;
+  accent-color: var(--sensitivity-color);
+  cursor: pointer;
+}
+
+.sensitivity-range-labels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.sensitivity-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.sensitivity-controls p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.sensitivity-controls button,
+.saved-configuration-actions button {
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 1px solid #46534b;
+  border-radius: 5px;
+  background: #18211b;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sensitivity-controls button:hover,
+.saved-configuration-actions button:hover {
+  border-color: var(--accent);
+  background: #202b23;
+}
+
+.saved-configurations {
+  margin-top: 14px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(18, 23, 20, 0.88);
+}
+
+.saved-configurations-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.saved-configurations-heading h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 17px;
+}
+
+.saved-configurations-heading p,
+.saved-configurations-heading > span {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.saved-configurations-heading > span {
+  flex: 0 0 auto;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.save-configuration-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.save-configuration-form input {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #0c110e;
+  color: var(--text);
+}
+
+.save-configuration-form button {
+  min-height: 42px;
+  padding: 0 13px;
+  border: 1px solid #526b47;
+  border-radius: 5px;
+  background: #22301e;
+  color: #d5f4c4;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.save-configuration-form button:disabled,
+.save-configuration-form input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.saved-configurations-message,
+.saved-configurations-empty {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.saved-configurations-list {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.saved-configuration {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #101612;
+}
+
+.saved-configuration-info {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.saved-configuration-info strong,
+.saved-configuration-info span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-configuration-info strong {
+  color: var(--text);
+  font-size: 12px;
+}
+
+.saved-configuration-info span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.saved-configuration-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+}
+
+.saved-configuration-actions .saved-configuration-delete {
+  color: #ffb1b1;
 }
 
 .dpi-row {
@@ -692,11 +897,25 @@ input:focus-visible,
   }
 
   .sensitivity-grid > div {
-    padding: 11px !important;
+    padding: 11px;
   }
 
   .result-actions {
     grid-template-columns: 1fr;
+  }
+
+  .saved-configurations {
+    padding: 13px;
+  }
+
+  .saved-configuration {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .sensitivity-controls {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .app-header {

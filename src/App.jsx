@@ -12,6 +12,11 @@ import { generateSensitivity } from "./utils/generateSensitivity";
 import { createCustomPhone } from "./utils/createCustomPhone";
 import { searchPhones } from "./utils/searchPhones";
 import { isStoredPhone } from "./utils/storage";
+import {
+  addSavedConfiguration,
+  MAX_SAVED_CONFIGURATIONS,
+  sanitizeSavedConfigurations,
+} from "./utils/savedConfigurations";
 import { useClipboard } from "./hooks/useClipboard";
 
 const VALID_STYLES = new Set(Object.keys(STYLES));
@@ -54,8 +59,20 @@ function loadStoredPreferences() {
   }
 }
 
+function loadSavedConfigurations() {
+  try {
+    const rawValue = localStorage.getItem("savedConfigurations");
+    return rawValue
+      ? sanitizeSavedConfigurations(JSON.parse(rawValue))
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function App() {
   const [initialPreferences] = useState(loadStoredPreferences);
+  const [initialSavedConfigurations] = useState(loadSavedConfigurations);
   const [query, setQuery] = useState("");
   const [selectedStyle, setSelectedStyle] = useState(initialPreferences.selectedStyle);
   const [selectedPhone, setSelectedPhone] = useState(initialPreferences.selectedPhone);
@@ -64,6 +81,9 @@ export default function App() {
   const [customDpi, setCustomDpi] = useState("");
   const [customError, setCustomError] = useState("");
   const [sens, setSens] = useState(initialPreferences.sens);
+  const [savedConfigurations, setSavedConfigurations] = useState(initialSavedConfigurations);
+  const [configurationName, setConfigurationName] = useState("");
+  const [savedConfigurationMessage, setSavedConfigurationMessage] = useState("");
   const [downloadError, setDownloadError] = useState("");
   const [copyError, setCopyError] = useState("");
   const { copied, copy } = useClipboard();
@@ -172,6 +192,104 @@ export default function App() {
       if (result) localStorage.setItem("sens", JSON.stringify(result));
     } catch {
       // La configuración permanece disponible durante esta sesión.
+    }
+  };
+
+  const changeSensitivity = (key, value) => {
+    if (!FIELDS.some((field) => field.key === key) || !Number.isInteger(value) || value < 0 || value > 200) {
+      return;
+    }
+
+    setSens((current) => {
+      if (!current) return current;
+      const next = { ...current, [key]: value };
+      try {
+        localStorage.setItem("sens", JSON.stringify(next));
+      } catch {
+        // La sensibilidad sigue disponible durante esta sesión.
+      }
+      return next;
+    });
+    setSavedConfigurationMessage("");
+  };
+
+  const resetSensitivities = () => {
+    if (!selectedPhone) return;
+
+    const result = generateSensitivity(selectedPhone.dpi, selectedStyle);
+    setSens(result);
+    setSavedConfigurationMessage("");
+    try {
+      localStorage.setItem("sens", JSON.stringify(result));
+    } catch {
+      // La sensibilidad sigue disponible durante esta sesión.
+    }
+  };
+
+  const saveConfiguration = (event) => {
+    event.preventDefault();
+    setSavedConfigurationMessage("");
+
+    if (!selectedPhone || !sens) {
+      setSavedConfigurationMessage("Selecciona un dispositivo antes de guardar.");
+      return;
+    }
+
+    const name = configurationName.trim();
+    if (!name) {
+      setSavedConfigurationMessage("Escribe un nombre para guardar la configuración.");
+      return;
+    }
+    if (savedConfigurations.length >= MAX_SAVED_CONFIGURATIONS) {
+      setSavedConfigurationMessage("Ya tienes ocho configuraciones. Borra una para guardar otra.");
+      return;
+    }
+
+    const configuration = {
+      id: globalThis.crypto?.randomUUID?.() ?? `saved-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      name,
+      phone: selectedPhone,
+      style: selectedStyle,
+      values: sens,
+      createdAt: Date.now(),
+    };
+
+    try {
+      const next = addSavedConfiguration(savedConfigurations, configuration);
+      localStorage.setItem("savedConfigurations", JSON.stringify(next));
+      setSavedConfigurations(next);
+      setConfigurationName("");
+      setSavedConfigurationMessage(`“${name}” quedó guardada en este navegador.`);
+    } catch {
+      setSavedConfigurationMessage("No se pudo guardar. Revisa el almacenamiento disponible en el navegador.");
+    }
+  };
+
+  const applySavedConfiguration = (configuration) => {
+    setSelectedPhone(configuration.phone);
+    setSelectedStyle(configuration.style);
+    setSens(configuration.values);
+    setDownloadError("");
+    setCopyError("");
+    setSavedConfigurationMessage(`Se cargó “${configuration.name}”.`);
+
+    try {
+      localStorage.setItem("selectedPhone", JSON.stringify(configuration.phone));
+      localStorage.setItem("style", configuration.style);
+      localStorage.setItem("sens", JSON.stringify(configuration.values));
+    } catch {
+      // La configuración aplicada sigue disponible durante esta sesión.
+    }
+  };
+
+  const deleteSavedConfiguration = (id) => {
+    const next = savedConfigurations.filter((configuration) => configuration.id !== id);
+    try {
+      localStorage.setItem("savedConfigurations", JSON.stringify(next));
+      setSavedConfigurations(next);
+      setSavedConfigurationMessage("Configuración guardada eliminada.");
+    } catch {
+      setSavedConfigurationMessage("No se pudo eliminar. Inténtalo de nuevo.");
     }
   };
 
@@ -288,7 +406,7 @@ export default function App() {
                 <div className="recent-heading">
                   <p className="section-label">RECIENTES</p>
                   <button type="button" onClick={clearSavedDevices}>
-                    Borrar guardados
+                    Borrar recientes
                   </button>
                 </div>
                 {recentPhones.map((phone) => (
@@ -332,8 +450,16 @@ export default function App() {
                       title={field.label}
                       value={sens[field.key]}
                       color={field.color}
+                      onChange={(value) => changeSensitivity(field.key, value)}
                     />
                   ))}
+                </div>
+
+                <div className="sensitivity-controls">
+                  <p>Ajusta los valores a tu gusto. Usa las flechas del teclado para afinar de uno en uno.</p>
+                  <button type="button" onClick={resetSensitivities}>
+                    Restablecer estimación
+                  </button>
                 </div>
 
                 {FIELDS.some((field) => sens[field.key] >= 200) && (
@@ -376,6 +502,78 @@ export default function App() {
                 Selecciona un dispositivo para ver una configuración sugerida.
               </div>
             )}
+
+            <section className="saved-configurations" aria-labelledby="saved-configurations-title">
+              <div className="saved-configurations-heading">
+                <div>
+                  <h2 id="saved-configurations-title">Mis configuraciones</h2>
+                  <p>Se guardan solo en este navegador; límite de {MAX_SAVED_CONFIGURATIONS}.</p>
+                </div>
+                <span>{savedConfigurations.length}/{MAX_SAVED_CONFIGURATIONS}</span>
+              </div>
+              <form className="save-configuration-form" onSubmit={saveConfiguration}>
+                <label className="visually-hidden" htmlFor="configuration-name">
+                  Nombre de la configuración
+                </label>
+                <input
+                  id="configuration-name"
+                  type="text"
+                  value={configurationName}
+                  onChange={(event) => setConfigurationName(event.target.value)}
+                  placeholder="Ej. Mi sensibilidad para rush"
+                  maxLength={40}
+                  disabled={savedConfigurations.length >= MAX_SAVED_CONFIGURATIONS}
+                />
+                <button
+                  type="submit"
+                  disabled={!selectedPhone || savedConfigurations.length >= MAX_SAVED_CONFIGURATIONS}
+                >
+                  Guardar actual
+                </button>
+              </form>
+              {savedConfigurationMessage && (
+                <p
+                  className="saved-configurations-message"
+                  role={savedConfigurationMessage.startsWith("No se pudo") ? "alert" : "status"}
+                >
+                  {savedConfigurationMessage}
+                </p>
+              )}
+              {savedConfigurations.length > 0 ? (
+                <ul className="saved-configurations-list">
+                  {savedConfigurations.map((configuration) => (
+                    <li className="saved-configuration" key={configuration.id}>
+                      <div className="saved-configuration-info">
+                        <strong>{configuration.name}</strong>
+                        <span>
+                          {configuration.phone.brand} {configuration.phone.model} · {STYLES[configuration.style].name}
+                        </span>
+                      </div>
+                      <div className="saved-configuration-actions">
+                        <button
+                          type="button"
+                          onClick={() => applySavedConfiguration(configuration)}
+                        >
+                          Cargar
+                        </button>
+                        <button
+                          type="button"
+                          className="saved-configuration-delete"
+                          aria-label={`Eliminar ${configuration.name}`}
+                          onClick={() => deleteSavedConfiguration(configuration.id)}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="saved-configurations-empty">
+                  Aún no guardas ninguna. Genera una, ajusta los valores y guárdala aquí.
+                </p>
+              )}
+            </section>
           </section>
         </div>
         <section className="seo-guide" aria-labelledby="guide-title">
@@ -415,8 +613,8 @@ export default function App() {
         </section>
         <footer className="app-footer">
           <p>
-            Los dispositivos y ajustes recientes se guardan solo en este navegador.
-            Puedes borrarlos desde la lista de recientes.
+            Los dispositivos recientes y hasta ocho configuraciones se guardan solo
+            en este navegador. Puedes borrar recientes o eliminar cada configuración.
           </p>
           <p>
             Proyecto independiente, sin afiliación ni aval de Garena. Free Fire es
@@ -429,10 +627,11 @@ export default function App() {
             <summary>Privacidad y uso</summary>
             <div className="legal-copy">
               <p>
-                El modelo elegido, el perfil, los valores calculados y hasta cuatro
-                recientes se guardan en el almacenamiento local de este navegador.
-                No se envían a un servidor de FF Sens Pro. Usa “Borrar guardados”
-                para eliminarlos; borrar los datos del navegador también los quita.
+                El modelo elegido, el perfil, los valores calculados, hasta cuatro
+                dispositivos recientes y hasta ocho configuraciones con nombre se
+                guardan en el almacenamiento local de este navegador. No se envían a
+                un servidor de FF Sens Pro. Puedes borrar los recientes y eliminar
+                cada configuración; borrar los datos del navegador también los quita.
               </p>
               <p>
                 Esta versión no integra cuentas, pagos, anuncios, analítica ni
