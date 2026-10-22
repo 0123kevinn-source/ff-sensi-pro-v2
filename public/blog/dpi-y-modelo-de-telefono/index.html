@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Qué significa el DPI o densidad de pantalla y por qué el catálogo no puede confirmar la configuración real de tu teléfono." />
+    <link rel="canonical" href="https://ff-sensi-pro-v2.vercel.app/blog/dpi-y-modelo-de-telefono/" />
+    <link rel="stylesheet" href="/static-pages.css" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>DPI y modelo de teléfono: límites de las referencias | FF Sens Pro</title>
+  </head>
+  <body>
+    <div class="info-shell">
+      <header class="info-header">
+        <a class="info-brand" href="/">FF SENS PRO</a>
+        <nav class="info-nav" aria-label="Navegación principal"><a href="/">Inicio</a><a href="/guia-sensibilidad/">Guía</a><a href="/blog/">Artículos</a><a href="/contacto/">Contacto</a></nav>
+      </header>
+      <main class="info-content">
+        <p class="info-eyebrow">DISPOSITIVOS Y REFERENCIAS</p>
+        <h1>DPI, modelo de teléfono y límites de las referencias</h1>
+        <p>
+          DPI suele utilizarse coloquialmente para hablar de densidad de pantalla
+          en Android. Esa densidad describe una escala lógica para dibujar la
+          interfaz; no es una lectura de la sensibilidad física del digitalizador
+          táctil y no indica cuántos píxeles puede mover tu dedo dentro de un juego.
+          Conviene separar esos conceptos antes de usar una calculadora basada en
+          números de densidad.
+        </p>
+        <h2>Por qué el navegador no detecta el DPI real</h2>
+        <p>
+          Los navegadores pueden limitar la información del dispositivo que una
+          página consulta. Algunas versiones comparten la marca y el modelo mediante
+          User-Agent Client Hints, otras solo indican la plataforma, y muchas
+          protegen el modelo completo. El navegador no ofrece a esta app acceso al
+          ajuste privado de densidad modificado en Android. Por eso la detección
+          presenta una coincidencia de catálogo como referencia, nunca como lectura
+          verificada.
+        </p>
+        <p>
+          Si el modelo no se comparte o no aparece en la lista, puedes buscarlo
+          manualmente o introducir un DPI que conozcas. Si no conoces ese valor,
+          usar un número al azar no hará que la estimación sea más precisa. La
+          herramienta puede seguir sirviendo como comparación matemática, pero debe
+          interpretarse con esa limitación.
+        </p>
+        <h2>Los valores de catálogo no son pruebas de fábrica</h2>
+        <p>
+          Un mismo nombre comercial puede tener varias versiones, regiones,
+          resoluciones y ajustes del sistema. El fabricante puede describir densidad
+          lógica de forma distinta a una herramienta de terceros. El catálogo de FF
+          Sens Pro es pequeño y orientativo; no es una base certificada por Samsung,
+          Apple, Xiaomi u otras marcas, ni fue leído desde la unidad que visita la
+          página.
+        </p>
+        <p>
+          En iOS, el número asociado a un teléfono es una referencia numérica dentro
+          de la fórmula, no un ajuste de DPI editable en el sistema. Si la calculadora
+          no identifica el modelo, consulta el catálogo por tu cuenta y selecciona
+          una coincidencia solo si realmente corresponde. No asumas que una
+          sugerencia automática equivale a identificación completa.
+        </p>
+        <h2>Cómo usar la referencia con responsabilidad</h2>
+        <p>
+          La fórmula parte de 411 DPI y escala valores iniciales según la relación
+          entre ese punto de referencia y el número seleccionado. Luego aplica el
+          multiplicador del perfil, redondea y limita cada control a 200. Es un
+          cálculo determinista de FF Sens Pro, no un modelo físico de la pantalla ni
+          una recomendación de Garena.
+        </p>
+        <p>
+          Usa el resultado para iniciar una prueba, conserva el mismo HUD y mueve un
+          solo control cada vez. Si quieres entender el proceso completo, revisa la
+          <a href="/guia-sensibilidad/">guía paso a paso</a>. La
+          <a href="/#sensitivity-tool">calculadora</a> permite también escribir un
+          DPI manual y guardar referencias en el navegador actual.
+        </p>
+      </main>
+      <footer class="info-footer"><p>Los números de catálogo son aproximados y no están verificados por los fabricantes.</p><nav aria-label="Información del sitio"><a href="/sobre-nosotros/">Acerca de</a><a href="/guia-sensibilidad/">Guía</a><a href="/blog/">Más artículos</a><a href="/privacidad/">Privacidad</a><a href="/aviso-legal/">Aviso legal</a><a href="/terminos/">Términos</a><a href="/contacto/">Contacto</a></nav></footer>
+    </div>
+  </body>
+</html>

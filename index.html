@@ -1,8 +1,6 @@
 <!doctype html>
 <html lang="es">
   <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9659401497685795"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -37,6 +35,178 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <section class="publisher-content" id="publisher-content" aria-labelledby="publisher-title">
+      <div class="publisher-content-inner">
+        <noscript class="publisher-noscript">
+          <h1>FF Sens Pro: estimaciones de sensibilidad para Free Fire</h1>
+          <p>
+            Esta herramienta interactiva requiere JavaScript. A continuación
+            encontrarás información sobre sus cálculos, límites y privacidad.
+          </p>
+        </noscript>
+        <p class="publisher-eyebrow">GUÍA PRÁCTICA</p>
+        <h2 id="publisher-title">Cómo ajustar la sensibilidad de Free Fire con criterio</h2>
+        <p>
+          FF Sens Pro calcula una referencia inicial a partir del DPI que introduces
+          o de un valor de catálogo, y del perfil que eliges. No lee tu teléfono ni
+          modifica los controles del juego. Usa el resultado como punto de partida,
+          no como una configuración oficial o garantía de rendimiento.
+        </p>
+
+        <div class="publisher-grid">
+          <article>
+            <h3>1. Elige un dispositivo o introduce un DPI</h3>
+            <p>
+              Pulsa “Detectar mi dispositivo” para consultar el modelo que el
+              navegador comparta. Si coincide exactamente con el catálogo, se
+              selecciona una referencia aproximada; si no, busca el equipo o
+              introduce un número entero entre 100 y 1000. El navegador puede ocultar
+              el modelo y nunca proporciona el DPI real.
+            </p>
+          </article>
+          <article>
+            <h3>2. Selecciona un perfil y revisa los seis controles</h3>
+            <p>
+              Equilibrado usa el multiplicador base; Agresivo aplica un factor de
+              1,12 y Sniper uno de 0,82. La herramienta estima General, Punto Rojo,
+              Mira 2X, Mira 4X, Sniper y Free Look; puedes ajustar cada resultado.
+            </p>
+          </article>
+          <article>
+            <h3>3. Prueba los cambios de uno en uno</h3>
+            <p>
+              Empieza en el campo de entrenamiento, conserva el mismo HUD y cambia
+              una sensibilidad cada vez. Así puedes observar qué ajuste te resulta
+              cómodo antes de guardar o comparar configuraciones.
+            </p>
+          </article>
+        </div>
+
+        <div class="publisher-explanation">
+          <h3>Qué significa el DPI y qué no significa</h3>
+          <p>
+            En Android, la densidad de pantalla influye en la escala de la interfaz;
+            no mide la respuesta física del panel táctil ni cambia por sí sola la
+            sensibilidad configurada dentro de Free Fire. En iPhone, el valor del
+            catálogo es solo una referencia matemática para esta herramienta y no
+            equivale a un ajuste de DPI disponible para el usuario.
+          </p>
+          <p>
+            El cálculo parte de 411 DPI, multiplica seis valores base por la relación
+            entre esa referencia y el valor introducido, aplica el perfil elegido,
+            redondea el resultado y limita cada cifra a 200. Esta fórmula es propia
+            de la herramienta, no una recomendación de Garena ni una medición
+            experimental de cada teléfono.
+          </p>
+        </div>
+
+        <div class="publisher-faq">
+          <h3>Preguntas frecuentes</h3>
+          <details>
+            <summary>¿Por qué un resultado puede llegar a 200?</summary>
+            <p>
+              La herramienta limita cada control a 200. Un resultado en ese límite
+              no confirma que sea el valor ideal: revisa el DPI introducido y ajusta
+              manualmente la cifra en el juego.
+            </p>
+          </details>
+          <details>
+            <summary>¿La herramienta detecta mi teléfono o guarda mis datos en línea?</summary>
+            <p>
+              No detecta el dispositivo. Las preferencias, los equipos recientes y
+              las configuraciones guardadas se conservan en el almacenamiento local
+              del navegador; no se sincronizan con una cuenta ni con un servidor de
+              FF Sens Pro.
+            </p>
+          </details>
+          <details>
+            <summary>¿Quién publica este proyecto y dónde consultar sus políticas?</summary>
+            <p>
+              FF Sens Pro es una herramienta independiente y no está afiliada a
+              Garena. Consulta <a href="/sobre-nosotros/">Sobre el proyecto</a>,
+              <a href="/privacidad/"> la política de privacidad</a>,
+              <a href="/aviso-legal/"> el aviso legal</a> o
+              <a href="/contacto/"> contacta al responsable</a>.
+            </p>
+          </details>
+          <details>
+            <summary>¿Cuál perfil debo elegir para empezar?</summary>
+            <p>
+              Equilibrado es el punto de partida de la fórmula. Agresivo aumenta
+              sus valores estimados y Sniper los reduce. Ninguno conoce tu
+              experiencia o estilo real; prueba uno cada vez con el mismo HUD.
+            </p>
+          </details>
+          <details>
+            <summary>¿La configuración garantiza más tiros a la cabeza?</summary>
+            <p>
+              No. La herramienta no mide puntería, latencia, FPS, pantalla,
+              controles ni práctica. Una cifra no garantiza resultados; la
+              coordinación, el HUD y la comodidad varían entre jugadores.
+            </p>
+          </details>
+          <details>
+            <summary>¿Por qué el DPI de mi equipo puede diferir del catálogo?</summary>
+            <p>
+              El fabricante, la versión del sistema y los ajustes del usuario
+              pueden cambiar la densidad lógica. El valor del catálogo es una
+              referencia y no una lectura individual del teléfono.
+            </p>
+          </details>
+          <details>
+            <summary>¿Cómo guardo o comparo dos pruebas?</summary>
+            <p>
+              Selecciona un equipo, ajusta los controles, escribe un nombre y
+              pulsa “Guardar actual”. Marca “Comparar” en dos o tres elementos
+              guardados para ver sus diferencias en esta misma página.
+            </p>
+          </details>
+          <details>
+            <summary>¿Mis ajustes aparecen en otro teléfono?</summary>
+            <p>
+              No. Se guardan solo en el almacenamiento del navegador actual y no
+              se sincronizan con una cuenta. Si borras los datos del sitio,
+              cambias de navegador o de dispositivo, no podrás recuperarlos.
+            </p>
+          </details>
+          <details>
+            <summary>¿Dónde puedo leer la guía completa y los artículos?</summary>
+            <p>
+              Consulta la <a href="/guia-sensibilidad/">guía paso a paso</a> y
+              los <a href="/blog/">artículos de la herramienta</a> sobre
+              práctica, controles y límites de las estimaciones.
+            </p>
+          </details>
+        </div>
+        <nav class="publisher-resources" aria-label="Guías y artículos">
+          <h3>Guías para seguir</h3>
+          <a href="/guia-sensibilidad/">Cómo configurar la sensibilidad paso a paso</a>
+          <a href="/blog/">Ver artículos de práctica y configuración</a>
+        </nav>
+      </div>
+    </section>
+    <div id="ad-slot-mount"></div>
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <p>
+          Proyecto independiente, sin afiliación ni aval de Garena. Free Fire es
+          una marca de sus respectivos titulares.
+        </p>
+        <p>
+          Contacto:
+          <a href="mailto:danpon421@gmail.com">danpon421@gmail.com</a>
+        </p>
+        <nav aria-label="Información del sitio">
+          <a href="/sobre-nosotros/">Sobre el proyecto</a>
+          <a href="/guia-sensibilidad/">Guía</a>
+          <a href="/blog/">Artículos</a>
+          <a href="/privacidad/">Privacidad</a>
+          <a href="/terminos/">Términos</a>
+          <a href="/aviso-legal/">Aviso legal</a>
+          <a href="/contacto/">Contacto</a>
+        </nav>
+      </div>
+    </footer>
     <noscript>Activa JavaScript para usar el generador de sensibilidad FF Sens Pro.</noscript>
   </body>
 </html>

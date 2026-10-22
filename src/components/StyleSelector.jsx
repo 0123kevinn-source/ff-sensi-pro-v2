@@ -5,46 +5,22 @@ export default function StyleSelector({
   onSelect,
 }) {
   return (
-    <div
-      className="style-selector"
-      style={{
-        display: "flex",
-        gap: "10px",
-        marginBottom: "20px",
-      }}
-    >
+    <div className="style-selector" role="group" aria-label="Perfil de juego">
       {Object.entries(STYLES).map(([id, style]) => (
         <button
           key={id}
-          title={style.description}
+          className={`style-option${selected === id ? " is-selected" : ""}`}
+          type="button"
           aria-label={`${style.name}. ${style.description}`}
           aria-pressed={selected === id}
+          style={{ "--profile-color": style.color }}
           onClick={() => onSelect(id)}
-          style={{
-            flex: 1,
-            padding: "14px",
-            borderRadius: "14px",
-            border:
-              selected === id
-                ? `2px solid ${style.color}`
-                : "1px solid #333",
-
-            background:
-              selected === id
-                ? "#1e1e1e"
-                : "#121212",
-
-            color:
-              selected === id
-                ? style.color
-                : "#999",
-
-            cursor: "pointer",
-            transition: "0.2s",
-            fontWeight: "bold",
-          }}
         >
-          {style.name}
+          <span className="style-option-indicator" aria-hidden="true" />
+          <span className="style-option-copy">
+            <strong>{style.name}</strong>
+            <small>{style.description}</small>
+          </span>
         </button>
       ))}
     </div>

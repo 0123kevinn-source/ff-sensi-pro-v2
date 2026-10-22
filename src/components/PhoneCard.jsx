@@ -3,162 +3,52 @@ import { motion } from "framer-motion";
 export default function PhoneCard({
   phone,
   onSelect,
+  isSelected = false,
 }) {
   return (
     <motion.button
       type="button"
+      className={`phone-card${isSelected ? " is-selected" : ""}`}
       aria-label={`Seleccionar ${phone.brand} ${phone.model}, DPI ${phone.dpi}`}
+      aria-pressed={isSelected}
       initial={{
         opacity: 0,
-        y: 20,
+        y: 8,
       }}
-
       animate={{
         opacity: 1,
         y: 0,
       }}
-
       whileHover={{
-        scale: 1.03,
+        y: -2,
       }}
-
       whileTap={{
-        scale: 0.98,
+        scale: 0.99,
       }}
-
       transition={{
-        duration: 0.25,
+        duration: 0.18,
       }}
-
       onClick={() => onSelect(phone)}
-
-      style={{
-        background:
-          "linear-gradient(135deg,#151515,#101010)",
-
-        border: "1px solid #222",
-
-        borderRadius: "18px",
-
-        padding: "18px",
-
-        marginBottom: "14px",
-
-        cursor: "pointer",
-
-        overflow: "hidden",
-
-        position: "relative",
-
-        boxShadow:
-          "0 0 20px rgba(0,0,0,0.25)",
-        width: "100%",
-        textAlign: "left",
-        color: "inherit",
-        font: "inherit",
-        appearance: "none",
-      }}
     >
-      {/* GLOW */}
-      <div
-        style={{
-          position: "absolute",
-          top: "-30px",
-          right: "-30px",
-
-          width: "100px",
-          height: "100px",
-
-          background:
-            "rgba(0,255,136,0.08)",
-
-          borderRadius: "50%",
-
-          filter: "blur(20px)",
-        }}
-      />
-
-      <div
-        style={{
-          display: "flex",
-
-          justifyContent:
-            "space-between",
-
-          alignItems: "center",
-
-          position: "relative",
-
-          zIndex: 2,
-        }}
-      >
-        <div>
-          <h3
-            style={{
-              color: "#ffffff",
-
-              fontSize: "20px",
-
-              marginBottom: "6px",
-
-              fontWeight: "700",
-            }}
-          >
-            {phone.brand}
-          </h3>
-
-          <p
-            style={{
-              color: "#00ff88",
-
-              fontSize: "15px",
-
-              fontWeight: "500",
-            }}
-          >
-            {phone.model}
-          </p>
-        </div>
-
-        <div
-          style={{
-            background: "#0f0f0f",
-
-            padding: "10px 16px",
-
-            borderRadius: "14px",
-
-            border:
-              "1px solid #2a2a2a",
-
-            textAlign: "center",
-
-            minWidth: "90px",
-          }}
-        >
-          <p
-            style={{
-              color: "#777",
-
-              fontSize: "11px",
-
-              marginBottom: "4px",
-            }}
-          >
-            DPI
-          </p>
-
-          <h2
-            style={{
-              color: "#ffaa00",
-
-              fontSize: "24px",
-            }}
-          >
-            {phone.dpi}
-          </h2>
-        </div>
-      </div>
+      <span className="phone-card-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <rect x="6.5" y="2.75" width="11" height="18.5" rx="2.5" />
+          <path d="M10 5.75h4M11 18.25h2" />
+        </svg>
+      </span>
+      <span className="phone-card-copy">
+        <strong>{phone.brand}</strong>
+        <span>{phone.model}</span>
+      </span>
+      <span className="phone-card-dpi">
+        <small>DPI REF.</small>
+        <strong>{phone.dpi}</strong>
+      </span>
+      <span className="phone-card-arrow" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="none">
+          <path d="M4 10h11m-4-4 4 4-4 4" />
+        </svg>
+      </span>
     </motion.button>
   );
 }

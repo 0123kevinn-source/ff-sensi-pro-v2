@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://ff-sensi-pro-v2.vercel.app/</loc>
-  </url>
+  <url><loc>https://ff-sensi-pro-v2.vercel.app/</loc></url>
+  <url><loc>https://ff-sensi-pro-v2.vercel.app/guia-sensibilidad/</loc></url>
+  <url><loc>https://ff-sensi-pro-v2.vercel.app/blog/</loc></url>
+  <url><loc>https://ff-sensi-pro-v2.vercel.app/blog/probar-sensibilidad-headshot/</loc></url>
+  <url><loc>https://ff-sensi-pro-v2.vercel.app/blog/punteria-en-movil/</loc></url>
+  <url><loc>https://ff-sensi-pro-v2.vercel.app/blog/dpi-y-modelo-de-telefono/</loc></url>
+  <url><loc>https://ff-sensi-pro-v2.vercel.app/blog/errores-al-cambiar-sensibilidad/</loc></url>
+  <url><loc>https://ff-sensi-pro-v2.vercel.app/blog/rendimiento-y-gama-del-telefono/</loc></url>
+  <url><loc>https://ff-sensi-pro-v2.vercel.app/sobre-nosotros/</loc></url>
+  <url><loc>https://ff-sensi-pro-v2.vercel.app/privacidad/</loc></url>
+  <url><loc>https://ff-sensi-pro-v2.vercel.app/aviso-legal/</loc></url>
+  <url><loc>https://ff-sensi-pro-v2.vercel.app/terminos/</loc></url>
+  <url><loc>https://ff-sensi-pro-v2.vercel.app/contacto/</loc></url>
 </urlset>

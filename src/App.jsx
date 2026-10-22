@@ -4,12 +4,14 @@ import Header from "./components/Header";
 import SearchBox from "./components/SearchBox";
 import PhoneCard from "./components/PhoneCard";
 import ResultCard from "./components/ResultCard";
+import AdSlot from "./components/AdSlot";
 import StyleSelector from "./components/StyleSelector";
 import { FIELDS } from "./data/fields";
 import { PHONES } from "./data/phones";
 import { STYLES } from "./data/styles";
 import { generateSensitivity } from "./utils/generateSensitivity";
 import { createCustomPhone } from "./utils/createCustomPhone";
+import { detectDevice } from "./utils/detectDevice";
 import { searchPhones } from "./utils/searchPhones";
 import { isStoredPhone } from "./utils/storage";
 import {
@@ -83,6 +85,9 @@ export default function App() {
   const [customModel, setCustomModel] = useState("");
   const [customDpi, setCustomDpi] = useState("");
   const [customError, setCustomError] = useState("");
+  const [isDetectingDevice, setIsDetectingDevice] = useState(false);
+  const [deviceDetectionMessage, setDeviceDetectionMessage] = useState("");
+  const [deviceDetectionStatus, setDeviceDetectionStatus] = useState("");
   const [sens, setSens] = useState(initialPreferences.sens);
   const [savedConfigurations, setSavedConfigurations] = useState(initialSavedConfigurations);
   const [comparisonIds, setComparisonIds] = useState([]);
@@ -94,6 +99,15 @@ export default function App() {
   const resultRef = useRef(null);
   const filteredPhones = useMemo(() => searchPhones(query, PHONES), [query]);
   const comparisonConfigurations = getSelectedConfigurations(savedConfigurations, comparisonIds);
+  const estimatedSensitivity = useMemo(
+    () => selectedPhone ? generateSensitivity(selectedPhone.dpi, selectedStyle) : null,
+    [selectedPhone, selectedStyle],
+  );
+  const hasAdjustedSensitivities = Boolean(
+    estimatedSensitivity &&
+    sens &&
+    FIELDS.some((field) => sens[field.key] !== estimatedSensitivity[field.key]),
+  );
 
   const calculateSensitivity = (phone) => {
     setDownloadError("");
@@ -140,6 +154,53 @@ export default function App() {
           block: "start",
         });
       });
+    }
+  };
+
+  const detectCurrentDevice = async () => {
+    setIsDetectingDevice(true);
+    setDeviceDetectionMessage("");
+    setDeviceDetectionStatus("");
+
+    try {
+      const device = await detectDevice(navigator, PHONES);
+      if (device.phone) {
+        setQuery(`${device.phone.brand} ${device.phone.model}`);
+        setDeviceDetectionMessage(
+          `Detectamos ${device.phone.brand} ${device.phone.model}. Usaremos su DPI de referencia (${device.phone.dpi}); es aproximado, no una lectura del teléfono.`,
+        );
+        setDeviceDetectionStatus("success");
+        calculateSensitivity(device.phone);
+        return;
+      }
+
+      if (device.model) {
+        setCustomModel(device.model);
+        setQuery(device.model);
+        setDeviceDetectionMessage(
+          `El navegador identificó “${device.model}”, pero ese modelo no está en el catálogo. Busca una coincidencia o introduce el DPI manualmente para continuar.`,
+        );
+      } else if (device.platform === "iOS" || device.platform === "iPadOS") {
+        setDeviceDetectionMessage(
+          `El navegador confirma ${device.platform}, pero no revela el modelo exacto. Busca tu iPhone o iPad en el catálogo; el navegador no proporciona su DPI.`,
+        );
+      } else if (device.platform === "Android") {
+        setDeviceDetectionMessage(
+          "El navegador confirma Android, pero no comparte el modelo exacto. Busca tu teléfono por marca o introduce su DPI manualmente.",
+        );
+      } else {
+        setDeviceDetectionMessage(
+          "No pudimos identificar un teléfono compatible. Busca el modelo en el catálogo o introduce un DPI manualmente.",
+        );
+      }
+      setDeviceDetectionStatus("info");
+    } catch {
+      setDeviceDetectionMessage(
+        "No se pudo consultar la información del dispositivo. Puedes buscar el modelo o introducir el DPI manualmente.",
+      );
+      setDeviceDetectionStatus("error");
+    } finally {
+      setIsDetectingDevice(false);
     }
   };
 
@@ -340,9 +401,68 @@ export default function App() {
       <div className="app-container">
         <Header catalogCount={PHONES.length} />
 
-        <div className="app-layout">
+        <section className="home-hero" aria-labelledby="home-hero-title">
+          <div className="home-hero-copy">
+            <p className="hero-eyebrow">
+              <span aria-hidden="true" />
+              FREE FIRE · SENSITIVITY STUDIO
+            </p>
+            <h2 id="home-hero-title">
+              Tu sensibilidad.<br />
+              <span>Tu forma de jugar.</span>
+            </h2>
+            <p>
+              Encuentra una base para empezar, personaliza cada control y guarda
+              los ajustes que mejor se adapten a ti.
+            </p>
+            <a className="hero-action" href="#sensitivity-tool">
+              Crear mi configuración
+              <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+          <div className="hero-visual" aria-hidden="true">
+            <div className="hero-visual-orbit hero-visual-orbit-outer" />
+            <div className="hero-visual-orbit hero-visual-orbit-inner" />
+            <div className="hero-visual-core">
+              <span>FF</span>
+              <small>SENS</small>
+            </div>
+            <div className="hero-visual-tag hero-visual-tag-top">
+              <span className="hero-visual-tag-dot" />
+              AIM CONTROL
+            </div>
+            <div className="hero-visual-tag hero-visual-tag-bottom">
+              <span>01</span>
+              PERSONALIZA
+            </div>
+            <div className="hero-visual-line hero-visual-line-one" />
+            <div className="hero-visual-line hero-visual-line-two" />
+          </div>
+        </section>
+
+        <div className="app-layout" id="sensitivity-tool">
           <section className="controls-column" aria-label="Buscar dispositivo">
             <p className="section-label">1 / DISPOSITIVO</p>
+            <button
+              className="detect-device-button"
+              type="button"
+              onClick={detectCurrentDevice}
+              disabled={isDetectingDevice}
+            >
+              <span className="detect-device-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <rect x="7" y="3" width="10" height="18" rx="2.4" />
+                  <path d="M10 6h4M11 18h2M3 8V5a2 2 0 0 1 2-2m16 5V5a2 2 0 0 0-2-2M3 16v3a2 2 0 0 0 2 2m16-5v3a2 2 0 0 1-2 2" />
+                </svg>
+              </span>
+              <span>{isDetectingDevice ? "Detectando dispositivo..." : "Detectar mi dispositivo"}</span>
+              <span className="detect-device-arrow" aria-hidden="true">↗</span>
+            </button>
+            {deviceDetectionMessage && (
+              <p className={`device-detection-message is-${deviceDetectionStatus}`} role="status">
+                {deviceDetectionMessage}
+              </p>
+            )}
             <SearchBox query={query} setQuery={setQuery} />
 
             {query.trim() && (
@@ -358,6 +478,7 @@ export default function App() {
                     key={phone.id}
                     phone={phone}
                     onSelect={calculateSensitivity}
+                    isSelected={selectedPhone?.id === phone.id}
                   />
                 ))
               ) : query.trim() ? (
@@ -444,9 +565,17 @@ export default function App() {
                       {selectedPhone.brand} {selectedPhone.model}
                     </p>
                   </div>
-                  <span className="result-badge">
-                    {STYLES[selectedStyle].name}
-                  </span>
+                  <div className="result-badges">
+                    <span className="result-badge">{STYLES[selectedStyle].name}</span>
+                    <span className={`result-state-badge${hasAdjustedSensitivities ? " is-adjusted" : ""}`}>
+                      <span aria-hidden="true" />
+                      {hasAdjustedSensitivities ? "Personalizada" : "Base estimada"}
+                    </span>
+                  </div>
+
+                  <AdSlot
+                    pageStatus={query.trim() && filteredPhones.length === 0 ? "empty" : "ready"}
+                  />
                 </div>
 
                 <div className="sensitivity-grid">
@@ -484,6 +613,21 @@ export default function App() {
                     : "El DPI del catálogo es una referencia aproximada, no una lectura verificada del teléfono. La fórmula produce una estimación no oficial; pruébala en entrenamiento y ajústala a tu HUD."}
                 </p>
 
+                <section className="tuning-guide" aria-labelledby="tuning-guide-title">
+                  <div className="tuning-guide-heading">
+                    <span className="tuning-guide-icon" aria-hidden="true">✳</span>
+                    <div>
+                      <p>PRUEBA Y AJUSTA</p>
+                      <h3 id="tuning-guide-title">Encuentra tu propio control</h3>
+                    </div>
+                  </div>
+                  <ol>
+                    <li><span>01</span><p>Empieza con esta base en el campo de entrenamiento.</p></li>
+                    <li><span>02</span><p>Cambia un solo control por vez; usa <strong>−</strong> y <strong>+</strong> para moverlo de 5 en 5.</p></li>
+                    <li><span>03</span><p>Si te funciona, guarda la configuración con un nombre para volver a ella.</p></li>
+                  </ol>
+                </section>
+
                 <div className="result-actions">
                   <button className="download-button" type="button" onClick={downloadImage}>
                     Descargar imagen
@@ -504,8 +648,19 @@ export default function App() {
                 )}
               </div>
             ) : (
-              <div className="result-placeholder">
-                Selecciona un dispositivo para ver una configuración sugerida.
+              <div className="result-placeholder" aria-live="polite">
+                <div className="placeholder-art" aria-hidden="true">
+                  <span className="placeholder-orbit placeholder-orbit-one" />
+                  <span className="placeholder-orbit placeholder-orbit-two" />
+                  <span className="placeholder-crosshair">+</span>
+                </div>
+                <p className="placeholder-eyebrow">TU ESPACIO DE AJUSTE</p>
+                <h2>La configuración empieza aquí</h2>
+                <p>
+                  Elige tu dispositivo y crea una base que puedas probar,
+                  personalizar y guardar.
+                </p>
+                <span className="placeholder-step">01 — SELECCIONA UN DISPOSITIVO</span>
               </div>
             )}
 
@@ -671,82 +826,6 @@ export default function App() {
             </section>
           </section>
         </div>
-        <section className="seo-guide" aria-labelledby="guide-title">
-          <h2 id="guide-title">Guía de sensibilidad para Free Fire</h2>
-          <p>
-            Genera una referencia inicial según el DPI que ingreses o el modelo
-            de teléfono seleccionado. Los valores se calculan en tu navegador y
-            puedes ajustarlos al tamaño de tus controles y a tu forma de jugar.
-          </p>
-          <div className="seo-guide-grid">
-            <article>
-              <h3>¿El DPI aumenta la sensibilidad táctil?</h3>
-              <p>
-                No necesariamente. En Android, la densidad afecta principalmente
-                el tamaño de los elementos de interfaz; no es una medición de la
-                respuesta física de la pantalla ni cambia por sí sola la
-                sensibilidad dentro del juego.
-              </p>
-            </article>
-            <article>
-              <h3>¿Los valores son oficiales o garantizados?</h3>
-              <p>
-                No. Son estimaciones no oficiales para usar como punto de partida.
-                Pruébalas en entrenamiento y haz pequeños ajustes según tu
-                dispositivo, HUD y comodidad.
-              </p>
-            </article>
-            <article>
-              <h3>¿Cómo encuentro mi modelo o ingreso mi DPI?</h3>
-              <p>
-                Busca por marca o modelo en el catálogo. Si no aparece, puedes
-                introducir un DPI entero entre 100 y 1000; la herramienta no
-                detecta ni modifica los ajustes del teléfono.
-              </p>
-            </article>
-          </div>
-        </section>
-        <footer className="app-footer">
-          <p>
-            Los dispositivos recientes y hasta ocho configuraciones se guardan solo
-            en este navegador. Puedes borrar recientes o eliminar cada configuración.
-          </p>
-          <p>
-            Proyecto independiente, sin afiliación ni aval de Garena. Free Fire es
-            una marca de sus respectivos titulares.
-          </p>
-          <p>
-            Contacto: <a href="mailto:danpon421@gmail.com">danpon421@gmail.com</a>
-          </p>
-          <details className="legal-details">
-            <summary>Privacidad y uso</summary>
-            <div className="legal-copy">
-              <p>
-                El modelo elegido, el perfil, los valores calculados, hasta cuatro
-                dispositivos recientes y hasta ocho configuraciones con nombre se
-                guardan en el almacenamiento local de este navegador. No se envían a
-                un servidor de FF Sens Pro. Puedes borrar los recientes y eliminar
-                cada configuración; borrar los datos del navegador también los quita.
-              </p>
-              <p>
-                Esta versión no integra cuentas, pagos, anuncios, analítica ni
-                fuentes externas. El proveedor de alojamiento puede procesar datos
-                técnicos de las solicitudes (como la IP), según sus condiciones.
-              </p>
-              <p>
-                El DPI/densidad sirve aquí como referencia matemática. En Android,
-                la densidad escala unidades de interfaz; no equivale a la sensibilidad
-                física del panel táctil ni a los controles del juego. Las sensibilidades
-                son estimaciones no oficiales y deben probarse en partida.
-              </p>
-              <p>
-                Para consultas sobre este aviso o el tratamiento de datos, escribe a{" "}
-                <a href="mailto:danpon421@gmail.com">danpon421@gmail.com</a>.
-                FF Sens Pro no está afiliada ni avalada por Garena.
-              </p>
-            </div>
-          </details>
-        </footer>
       </div>
     </main>
   );

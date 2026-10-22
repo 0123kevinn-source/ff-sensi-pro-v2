@@ -5,7 +5,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'sha256-wBlM1z/QFd8kqRr7tI1yeH17bpAHIt5nTVICWvR7Scs='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.googletagservices.com https://www.google.com https://www.gstatic.com 'sha256-wBlM1z/QFd8kqRr7tI1yeH17bpAHIt5nTVICWvR7Scs='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.google.com https://*.googlesyndication.com https://*.doubleclick.net; font-src 'self' data:; connect-src 'self' https://*.google.com https://*.googlesyndication.com https://*.doubleclick.net; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com; upgrade-insecure-requests"
         },
         {
           "key": "Referrer-Policy",
