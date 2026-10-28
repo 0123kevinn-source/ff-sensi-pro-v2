@@ -2200,6 +2200,11 @@ input:focus-visible,
 }
 
 @media (max-width: 900px) {
+  .app-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
   .header-navigation {
     gap: 14px;
   }
@@ -2218,6 +2223,11 @@ input:focus-visible,
 @media (max-width: 700px) {
   .app-shell {
     padding: 15px 13px 30px;
+  }
+
+  .app-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
   }
 
   .app-header {
@@ -2327,6 +2337,10 @@ input:focus-visible,
 
   .hero-eyebrow {
     font-size: 8px;
+  }
+
+  .sensitivity-card-heading {
+    flex-wrap: wrap;
   }
 
   .style-selector .style-option {
