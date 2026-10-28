@@ -3,10 +3,13 @@ import test from "node:test";
 import {
   addSavedConfiguration,
   getSelectedConfigurations,
+  createSavedConfigurationsBackup,
+  mergeSavedConfigurations,
   MAX_COMPARE_CONFIGURATIONS,
   isStoredConfiguration,
   isSensitivityValues,
   MAX_SAVED_CONFIGURATIONS,
+  parseSavedConfigurationsBackup,
   sanitizeSavedConfigurations,
   toggleComparisonSelection,
 } from "../src/utils/savedConfigurations.js";
@@ -113,5 +116,36 @@ test("comparison order follows selection order and ignores deleted IDs", () => {
   assert.deepEqual(
     getSelectedConfigurations(configurations, ["saved-3", "removed", "saved-1"]),
     [configurations[2], configurations[0]],
+  );
+});
+
+test("saved configuration backups round-trip and reject invalid records", () => {
+  const backup = createSavedConfigurationsBackup([configuration], "2026-10-28T00:00:00.000Z");
+
+  assert.deepEqual(parseSavedConfigurationsBackup(backup), [configuration]);
+  assert.throws(() => parseSavedConfigurationsBackup({ ...backup, version: 2 }), TypeError);
+  assert.throws(
+    () => parseSavedConfigurationsBackup({ ...backup, configurations: [{ ...configuration, id: "" }] }),
+    TypeError,
+  );
+});
+
+test("import merges new configurations without duplicates and respects the limit", () => {
+  const existing = [{ ...configuration, id: "saved-1" }];
+  const imported = [
+    { ...configuration, id: "saved-1" },
+    { ...configuration, id: "saved-2" },
+  ];
+
+  assert.deepEqual(
+    mergeSavedConfigurations(existing, imported).map(({ id }) => id),
+    ["saved-1", "saved-2"],
+  );
+  assert.throws(
+    () => mergeSavedConfigurations(existing, Array.from({ length: MAX_SAVED_CONFIGURATIONS }, (_, index) => ({
+      ...configuration,
+      id: `imported-${index}`,
+    }))),
+    RangeError,
   );
 });

@@ -16,9 +16,13 @@ import { searchPhones } from "./utils/searchPhones";
 import { isStoredPhone } from "./utils/storage";
 import {
   addSavedConfiguration,
+  createSavedConfigurationsBackup,
   getSelectedConfigurations,
+  isSensitivityValues,
   MAX_COMPARE_CONFIGURATIONS,
   MAX_SAVED_CONFIGURATIONS,
+  mergeSavedConfigurations,
+  parseSavedConfigurationsBackup,
   sanitizeSavedConfigurations,
   toggleComparisonSelection,
 } from "./utils/savedConfigurations";
@@ -40,6 +44,7 @@ function loadStoredPreferences() {
   try {
     const savedPhone = readStoredValue("selectedPhone");
     const savedStyle = localStorage.getItem("style");
+    const savedSensitivity = readStoredValue("sens");
     const savedRecentPhones = readStoredValue("recentPhones");
     const style = savedStyle && VALID_STYLES.has(savedStyle)
       ? savedStyle
@@ -49,7 +54,11 @@ function loadStoredPreferences() {
     return {
       selectedStyle: style,
       selectedPhone: phone,
-      sens: phone ? generateSensitivity(phone.dpi, style) : null,
+      sens: phone
+        ? isSensitivityValues(savedSensitivity)
+          ? savedSensitivity
+          : generateSensitivity(phone.dpi, style)
+        : null,
       recentPhones: Array.isArray(savedRecentPhones)
         ? savedRecentPhones.filter(isStoredPhone).slice(0, 4)
         : [],
@@ -97,6 +106,7 @@ export default function App() {
   const [copyError, setCopyError] = useState("");
   const { copied, copy } = useClipboard();
   const resultRef = useRef(null);
+  const backupInputRef = useRef(null);
   const filteredPhones = useMemo(() => searchPhones(query, PHONES), [query]);
   const comparisonConfigurations = getSelectedConfigurations(savedConfigurations, comparisonIds);
   const estimatedSensitivity = useMemo(
@@ -328,6 +338,54 @@ export default function App() {
       setSavedConfigurationMessage(`“${name}” quedó guardada en este navegador.`);
     } catch {
       setSavedConfigurationMessage("No se pudo guardar. Revisa el almacenamiento disponible en el navegador.");
+    }
+  };
+
+  const exportSavedConfigurations = () => {
+    if (!savedConfigurations.length) return;
+
+    const backup = createSavedConfigurationsBackup(savedConfigurations);
+    const fileUrl = URL.createObjectURL(
+      new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" }),
+    );
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = "ff-sens-pro-configuraciones.json";
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(fileUrl), 1000);
+    setSavedConfigurationMessage("Copia descargada. Puedes importarla en otro dispositivo.");
+  };
+
+  const importSavedConfigurations = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      if (file.size > 256_000) {
+        throw new RangeError("El archivo supera el límite de 256 KB.");
+      }
+
+      const imported = parseSavedConfigurationsBackup(JSON.parse(await file.text()));
+      const next = mergeSavedConfigurations(savedConfigurations, imported);
+      localStorage.setItem("savedConfigurations", JSON.stringify(next));
+      setSavedConfigurations(next);
+      const addedCount = next.length - savedConfigurations.length;
+      setSavedConfigurationMessage(
+        addedCount
+          ? `Se importaron ${addedCount} ${addedCount === 1 ? "configuración" : "configuraciones"}.`
+          : "La copia ya está en este navegador; no se agregaron duplicados.",
+      );
+    } catch (error) {
+      const message = error instanceof RangeError || error instanceof TypeError
+        ? error.message
+        : error?.name === "QuotaExceededError"
+          ? "No hay espacio disponible para guardar la copia."
+          : "Comprueba que sea un archivo JSON válido de FF Sens Pro.";
+      setSavedConfigurationMessage(
+        `No se pudo importar. ${message}`,
+      );
+    } finally {
+      event.target.value = "";
     }
   };
 
@@ -668,9 +726,34 @@ export default function App() {
               <div className="saved-configurations-heading">
                 <div>
                   <h2 id="saved-configurations-title">Mis configuraciones</h2>
-                  <p>Se guardan solo en este navegador; límite de {MAX_SAVED_CONFIGURATIONS}.</p>
+                  <p>Se guardan en este navegador. Exporta una copia para moverlas.</p>
                 </div>
                 <span>{savedConfigurations.length}/{MAX_SAVED_CONFIGURATIONS}</span>
+              </div>
+              <div className="saved-configurations-tools">
+                <button
+                  type="button"
+                  onClick={exportSavedConfigurations}
+                  disabled={!savedConfigurations.length}
+                >
+                  <span aria-hidden="true">↓</span>
+                  Exportar copia
+                </button>
+                <button
+                  type="button"
+                  onClick={() => backupInputRef.current?.click()}
+                >
+                  <span aria-hidden="true">↑</span>
+                  Importar copia
+                </button>
+                <input
+                  ref={backupInputRef}
+                  type="file"
+                  accept=".json,application/json"
+                  aria-label="Seleccionar copia de configuraciones"
+                  hidden
+                  onChange={importSavedConfigurations}
+                />
               </div>
               <form className="save-configuration-form" onSubmit={saveConfiguration}>
                 <label className="visually-hidden" htmlFor="configuration-name">
@@ -747,7 +830,7 @@ export default function App() {
                 </ul>
               ) : (
                 <p className="saved-configurations-empty">
-                  Aún no guardas ninguna. Genera una, ajusta los valores y guárdala aquí.
+                  Aún no hay configuraciones guardadas. Ponle un nombre y pulsa Guardar actual.
                 </p>
               )}
               {comparisonConfigurations.length > 0 && (

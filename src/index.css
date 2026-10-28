@@ -24,7 +24,6 @@
 }
 
 body {
-  min-width: 320px;
   min-height: 100vh;
   margin: 0;
   background:
@@ -645,6 +644,46 @@ input:focus-visible,
   font-variant-numeric: tabular-nums;
 }
 
+.saved-configurations-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.saved-configurations-tools button {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+  border: 1px solid rgba(169, 195, 175, 0.18);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.035);
+  color: #c9d6cc;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease, color 140ms ease;
+}
+
+.saved-configurations-tools button:hover:not(:disabled) {
+  border-color: rgba(167, 243, 106, 0.45);
+  background: rgba(167, 243, 106, 0.07);
+  color: #e2f5d6;
+}
+
+.saved-configurations-tools button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.saved-configurations-tools button span {
+  color: var(--accent);
+  font-size: 15px;
+  line-height: 1;
+}
+
 .save-configuration-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1116,6 +1155,12 @@ input:focus-visible,
   text-decoration: none;
 }
 
+@media (max-width: 1100px) {
+  .sensitivity-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 900px) {
   .app-shell {
     padding: 28px 22px 42px;
@@ -1238,6 +1283,10 @@ input:focus-visible,
 @media (max-width: 380px) {
   .app-shell {
     padding-inline: 10px;
+  }
+
+  .sensitivity-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .controls-column,
@@ -2303,6 +2352,23 @@ input:focus-visible,
     padding: 17px;
   }
 
+  .result-heading {
+    flex-wrap: wrap;
+  }
+
+  .result-badges {
+    justify-items: start;
+  }
+
+  .sensitivity-value-control button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .sensitivity-card-heading {
+    flex-wrap: wrap;
+  }
+
   .style-selector .style-option {
     min-height: 88px;
     gap: 6px;
@@ -2337,10 +2403,6 @@ input:focus-visible,
 
   .hero-eyebrow {
     font-size: 8px;
-  }
-
-  .sensitivity-card-heading {
-    flex-wrap: wrap;
   }
 
   .style-selector .style-option {
